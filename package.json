@@ -1,0 +1,50 @@
+{
+  "name": "voxa",
+  "version": "1.0.0",
+  "description": "Voxa - AI-powered group communication platform with chat, compiler, and voice features",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "chat",
+    "AI",
+    "group",
+    "messaging",
+    "compiler",
+    "voxa",
+    "backend",
+    "nodejs",
+    "socketio"
+  ],
+  "author": "Abdelrahman Mohamed",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "canvas": "^3.1.0",
+    "cloudinary": "^2.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.4",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "openai": "^5.10.2",
+    "slugify": "^1.6.6",
+    "socket.io": "^4.8.1",
+    "stripe": "^17.7.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.1.0"
+  }
+}
