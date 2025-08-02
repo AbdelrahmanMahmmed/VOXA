@@ -141,8 +141,8 @@ if (event.type === 'checkout.session.completed') {
 
 | Feature                    | Free    | Level1    | Level2    | Premium   |
 | -------------------------- | ------- | --------- | --------- | --------- |
-| Characters per month       | 2       | Unlimited | Unlimited | Unlimited |
-| AI Messages                | Limited | Extended  | Extended  | Unlimited |
+| Characters per month       | 3       | 10 | 25 | Unlimited |
+| AI Messages                | Unlimited | Unlimited  | Unlimited  | Unlimited |
 | Access to Premium Features | ❌       | Partial   | Full      | ✅         |
 
 > Logic is handled in middleware to prevent free users from exceeding limits.
