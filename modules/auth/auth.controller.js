@@ -48,15 +48,15 @@ exports.loginUser = async (req, res, next) => {
     }
 };
 
-exports.logout = async (res, next) => {
+exports.logout = async (req, res, next) => {
     try {
-        res.clearCookie('token', {
+        res.clearCookie("token", {
             httpOnly: true,
             secure: true,
             sameSite: "Lax"
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             status: "success",
             message: "User logged out successfully"
         });
@@ -65,31 +65,34 @@ exports.logout = async (res, next) => {
     }
 };
 
+
 exports.ForgotPassword = async (req, res, next) => {
-    const result = await forgotPassword(req.body.email);
+    let result;
     try {
+        result = await forgotPassword(req.body.email);
+
         await SendEmail({
             to: result.user.email,
-            subject: 'Password Code From TEST',
+            subject: 'Password Code From VOXA',
             text: result.text
         });
-    } catch (err) {
-        result.user.passwordResetCode = undefined,
-            result.user.passwordResetExpiret = undefined,
-            result.user.passwordResetVerifed = undefined,
-            await result.user.save();
-        return next(new ApiError('Failed to send email, please try again later', 500));
-    }
 
-    try {
         res.status(200).json({
             status: "success",
             message: result.message
         });
+
     } catch (err) {
-        next(err);
+        if (result && result.user) {
+            result.user.passwordResetCode = undefined;
+            result.user.passwordResetExpiret = undefined;
+            result.user.passwordResetVerifed = undefined;
+            await result.user.save();
+        }
+        return next(new ApiError(err.message || 'Failed to send email, please try again later', 500));
     }
 };
+
 
 exports.VerifiedCode = async (req, res, next) => {
     try {
@@ -108,7 +111,7 @@ exports.Resetpassword = async (req, res, next) => {
     try {
         const result = await Resetpassword(req.body.email, req.body.newPassword);
 
-        if (!result.user) return next(new ApiError('There is no user with email ' + req.body.email, 404));
+        // if (!result.user) return next(new ApiError('There is no user with email ' + req.body.email, 404));
         if (!(result.user.passwordResetVerifed)) next(new ApiError('Invalid or expired reset password code', 400));
 
         res.cookie('token', result.token, {
@@ -122,7 +125,6 @@ exports.Resetpassword = async (req, res, next) => {
             status: "success",
             message: "Password reset successfully",
             data: {
-                user: result.user,
                 token: result.token
             }
         });

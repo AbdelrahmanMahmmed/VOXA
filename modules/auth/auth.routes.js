@@ -1,9 +1,9 @@
 const express = require('express');
 const {
-    registerUser,loginUser,logout,
-    ForgotPassword,VerifiedCode,Resetpassword
+    registerUser, loginUser, logout,
+    ForgotPassword, VerifiedCode, Resetpassword
 } = require('./auth.controller');
-const { RegisterUserValidator, LoginUserValidator } = require('./auth.validators');
+const { RegisterUserValidator, LoginUserValidator, resetpasswordVaild } = require('./auth.validators');
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.post('/login', LoginUserValidator, loginUser);
 router.post('/logout', logout);
 router.post('/forgot-password', ForgotPassword);
 router.post('/verify-Code', VerifiedCode);
-router.post('/reset-password', Resetpassword);
+router.post('/reset-password', resetpasswordVaild, Resetpassword);
 
 // Export the router to be used in the main app
 module.exports = router;

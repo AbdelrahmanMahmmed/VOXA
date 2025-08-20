@@ -70,3 +70,10 @@ exports.LoginUserValidator = [
     ,
     validatorsMiddleware,
 ];
+
+exports.resetpasswordVaild = [
+    body('newPassword')
+        .notEmpty()
+        .withMessage('Password is Required'),
+    validatorsMiddleware
+]

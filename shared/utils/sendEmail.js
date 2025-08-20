@@ -10,7 +10,7 @@ const sendtoEmail = async (options) => {
         }
     });
     const mailOptions = {
-        from: `"Test" <${process.env.AUTH_USER_SEND_EMAIL}>`,
+        from: `"VOXA" <${process.env.AUTH_USER_SEND_EMAIL}>`,
         to: options.to,
         subject: options.subject,
         text: options.text

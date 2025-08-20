@@ -1,4 +1,19 @@
-exports.Massage = async (user, GenerateaCode) => {
+// exports.Message = async (user, GenerateaCode) => {
+//     return `
+// Hello ${user.fName} ${user.lName},
+    
+// You have requested to reset your password. Please use the following code to complete the process:
+    
+// Reset Code: ${GenerateaCode}
+    
+// If you did not request this, please ignore this email or contact our support team for assistance.
+    
+// Thank you,
+// Hotel Team
+//     `;
+// };
+
+async function Message(user, GenerateaCode) {
     return `
 Hello ${user.fName} ${user.lName},
     
@@ -11,7 +26,7 @@ If you did not request this, please ignore this email or contact our support tea
 Thank you,
 Hotel Team
     `;
-};
+}
 
 const allowedPersonalities = [
     "friendly",
@@ -39,4 +54,4 @@ function getLanguageEnforcementMessage(language) {
     }
 }
 
-module.exports = { getLanguageEnforcementMessage ,getSpecialistMessage, allowedPersonalities };
+module.exports = { Message , getLanguageEnforcementMessage, getSpecialistMessage, allowedPersonalities };
