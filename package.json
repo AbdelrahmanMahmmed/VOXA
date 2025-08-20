@@ -2,10 +2,10 @@
   "name": "voxa",
   "version": "1.0.0",
   "description": "Voxa - AI-powered group communication platform with chat, compiler, and voice features",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [
     "chat",
