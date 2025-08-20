@@ -78,13 +78,17 @@ exports.generateLetterImage = async (letter) => {
     ctx.fillText(letter.toUpperCase(), canvas.width / 2, canvas.height / 2);
 
     const buffer = canvas.toBuffer('image/png');
-    const tempPath = path.join(__dirname, 'temp-avatar.png');
-    fs.writeFileSync(tempPath, buffer);
 
-    const result = await cloudinary.uploader.upload(tempPath, {
-        folder: 'default_avatars',
+    const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: 'default_avatars' },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        stream.end(buffer);
     });
 
-    fs.unlinkSync(tempPath);
     return result.secure_url;
 };
