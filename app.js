@@ -1,13 +1,15 @@
 const express = require('express')
 const router = require('./interfaces/http/routes.js');
 const dotenv = require('dotenv');
+const cors = require("cors");
 const globalError = require('./shared/middlewares/globalError.js');
 const ApiError = require('./shared/utils/APIError.js');
 
 dotenv.config({ path: 'config.env' })
 const app = express()
-app.use("/api/payment/stripe/webhook", express.raw({ type: 'application/json' }));
+// app.use("/api/payment/stripe/webhook", express.raw({ type: 'application/json' }));
 app.use(express.json())
+app.use(cors());
 app.use(router)
 
 const DBConnection = require('./infrastructure/database/mongo.js');
