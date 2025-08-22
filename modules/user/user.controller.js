@@ -9,7 +9,11 @@ exports.getUser = async (req, res, next) => {
         res.json({
             UserId: User.User.UserId,
             Name: User.User.name,
-            Email: User.User.email
+            Email: User.User.email,
+            Avatar : User.User.avatar,
+            Plan : User.User.plan,
+            Characters : User.User.characters,
+            Active : User.User.Active
         })
     } catch (err) {
         next(err)
@@ -23,8 +27,7 @@ exports.UpdateUser = async (req, res, next) => {
     try {
         const updatedUser = await UpdateUserInDb(req,userId, updateData);
         res.json({
-            UserId: updatedUser.User.UserId,
-            Name: updatedUser.User.name,
+            message : "Updated successflly"
         });
     } catch (err) {
         next(err);
@@ -35,7 +38,9 @@ exports.deleteUser = async (req, res, next) => {
     const userId = req.user._id || req.params.id;
     try {
         const result = await deleteUserInDb(userId);
-        res.json(result);
+        res.json({
+            message : "Deleted successflly"
+        });
     } catch (err) {
         next(err);
     }
@@ -68,18 +73,16 @@ exports.UpdateRoles = async (req, res, next) => {
 };
 
 exports.GetAllCharacters = async (req, res, next) => {
-    try{
+    try {
         const userId = req.user._id;
-        const result = await GetAllCharactersInDb(userId);
-        res.json({
-            result
-        })
-    }
-    catch(error)
-    {
+        const { isPublished } = req.query;
+
+        const result = await GetAllCharactersInDb(userId, isPublished);
+        res.json(result);
+    } catch (error) {
         next(error);
     }
-}
+};
 
 exports.uploadImageProfile = async (req, res) => {
     const response = await uploadUserProfileImage(req , req.file);

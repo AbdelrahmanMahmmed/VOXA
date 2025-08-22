@@ -16,7 +16,7 @@ router.route('/me')
 
 router.get('/characters', GetAllCharacters)
 
-router.post('/upload-avatar', upload.single('avatar') ,uploadImageProfile);
+router.put('/update-avatar', upload.single('avatar') ,uploadImageProfile);
 
 router.use(allwedTo("admin"));
 router.route('/')

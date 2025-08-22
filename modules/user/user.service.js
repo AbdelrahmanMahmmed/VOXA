@@ -1,3 +1,4 @@
+const { GetCharacterById } = require('../../domains/Character/character.repo');
 const { getUser, updateUser, getAllUsers } = require('../../domains/user/user.repo');
 
 exports.getUserById = async (id) => {
@@ -5,11 +6,26 @@ exports.getUserById = async (id) => {
     if (!User || User.IsDeleted) {
         throw new Error('User not found Or Deleted');
     }
+
+    const charactersDetails = await Promise.all(
+        User.Characters.map(async (charId) => {
+            const char = await GetCharacterById(charId);
+            return {
+                name: char.name,
+                specialty: char.Specialist
+            };
+        })
+    );
+
     return {
         User: {
             UserId: User.UserId,
             name: `${User.fName} ${User.lName}`,
-            email: User.email
+            email: User.email,
+            characters : charactersDetails,
+            plan : User.plan,
+            Active : User.isActive,
+            avatar: User.avatar
         }
     };
 };
@@ -56,15 +72,36 @@ exports.getAllUsersInDb = async (page, limit) => {
     };
 };
 
-exports.GetAllCharactersInDb = async (id) => {
+exports.GetAllCharactersInDb = async (id, isPublished) => {
     const User = await getUser(id);
     if (!User || User.IsDeleted) {
-        throw new Error('User not found Or Deleted');
+        throw new Error("User not found Or Deleted");
     }
+
+    const populatedUser = await User.populate("Characters");
+
+    let characters = populatedUser.Characters;
+
+    if (typeof isPublished !== "undefined") {
+        if (isPublished === "true" || isPublished === "false") {
+            const boolValue = isPublished === "true";
+            characters = characters.filter((char) => char.isPublished === boolValue);
+        } else {
+            throw new Error("Invalid value for isPublished, must be true or false");
+        }
+    }
+
     return {
-        data: User.Characters || [],
-    }
+        count: characters.length,
+        data: characters.map((char) => ({
+            name: char.name,
+            avatar: char.avatar,
+            specialist: char.Specialist,
+            visibility: char.isPublished ? "public" : "private"
+        }))
+    };
 };
+
 
 const { uploadImage } = require('../../shared/utils/UploadImage');
 
@@ -83,5 +120,5 @@ exports.uploadUserProfileImage = async (req,file) => {
     user.avatar = imageUrl;
     await user.save();
 
-    return { message: 'Image updated successfully', imageUrl };
+    return { message: 'Image updated successfully' };
 };

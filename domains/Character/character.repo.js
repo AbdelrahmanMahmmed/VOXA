@@ -8,13 +8,13 @@ exports.CreateCharacter = async (characterData) => {
 exports.GetCharacterById = async (id) => {
     const character = await Character.findById(id)
         .populate({ path: 'UserId', select: 'fName lName role ' })
-        .select('UserId name promot isDeleted ChatId');
+        .select('UserId name promot isDeleted ChatId Specialist');
     return character;
 }
 
 exports.GetAllCharacters = async () => {
     const characters = await Character.find({ isDeleted: false })
-        .select('characterId name promot -_id');
+        .select('characterId name promot -_id avatar Specialist');
     return characters;
 }
 
