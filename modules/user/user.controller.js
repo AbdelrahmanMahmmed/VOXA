@@ -1,4 +1,4 @@
-const { getUserById, UpdateUserInDb , deleteUserInDb, getAllUsersInDb, GetAllCharactersInDb, uploadUserProfileImage } = require('./user.service');
+const { getUserById, UpdateUserInDb , deleteUserInDb, getAllUsersInDb, GetAllCharactersInDb, uploadUserProfileImage, UpdateUserName } = require('./user.service');
 
 exports.getUser = async (req, res, next) => {
     const userId = req.user._id || req.params.id;
@@ -26,6 +26,20 @@ exports.UpdateUser = async (req, res, next) => {
     const updateData = req.body;
     try {
         const updatedUser = await UpdateUserInDb(req,userId, updateData);
+        res.json({
+            message : "Updated successflly"
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.UpdateName = async (req, res, next) => {
+    const userId = req.user._id || req.params.id;
+    console.log(req.user);
+    const updateData = req.body;
+    try {
+        const updatedUser = await UpdateUserName(req,userId, updateData);
         res.json({
             message : "Updated successflly"
         });

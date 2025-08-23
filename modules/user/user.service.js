@@ -49,6 +49,26 @@ exports.UpdateUserInDb = async (req, id) => {
     };
 };
 
+exports.UpdateUserName = async (req, id) => {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+        throw new Error('User not found Or Deleted');
+    }
+
+    const updateData = await updateUser(id, {
+        fName: req.body.fName || User.fName,
+        lName: req.body.lName || User.lName
+    });
+
+    return {
+        User: {
+            UserId: updateData.UserId,
+            name: `${updateData.fName} ${updateData.lName}`,
+            role: updateData.role
+        }
+    };
+};
+
 exports.deleteUserInDb = async (id) => {
     const User = await getUser(id);
     if (!User || User.IsDeleted) {

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUser, UpdateUser, deleteUser, getAllUsers, UpdateRoles, GetAllCharacters, uploadImageProfile } = require('./user.controller');
+const { getUser, UpdateUser, deleteUser, getAllUsers, UpdateRoles, GetAllCharacters, uploadImageProfile, UpdateName } = require('./user.controller');
 const { ProtectedRoters, allwedTo } = require('../../shared/middlewares/auth');
 const { UpdatedUserValidator, UpdatedUserForRoleValidator } = require('./user.validators');
 const { upload } = require('../../shared/utils/UploadImage');
@@ -11,7 +11,7 @@ router.use(ProtectedRoters);
 
 router.route('/me')
     .get(getUser)
-    .put(UpdatedUserValidator, UpdateUser)
+    .put(UpdatedUserValidator, UpdateName)
     .delete(deleteUser);
 
 router.get('/characters', GetAllCharacters)
