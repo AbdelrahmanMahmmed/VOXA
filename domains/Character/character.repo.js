@@ -12,11 +12,15 @@ exports.GetCharacterById = async (id) => {
     return character;
 }
 
-exports.GetAllCharacters = async () => {
-    const characters = await Character.find({ isDeleted: false })
+exports.GetAllCharacters = async (isPublished) => {
+    const characters = await Character.find({ 
+            isDeleted: false, 
+            isPublished: isPublished
+        })
         .select('characterId name promot -_id avatar Specialist');
     return characters;
 }
+
 
 exports.UpdateCharacter = async (id, characterData) => {
     return await Character.findByIdAndUpdate(id, characterData, {

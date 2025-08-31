@@ -54,8 +54,8 @@ exports.getCharacterById = async (id) => {
     return character;
 }
 
-exports.getAllCharacters = async () => {
-    const characters = await GetAllCharacters();
+exports.getAllCharacters = async (isPublished) => {
+    const characters = await GetAllCharacters(isPublished);
     return characters;
 }
 

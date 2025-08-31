@@ -49,7 +49,8 @@ exports.GetOne = async (req, res) => {
 
 exports.GetAll = async (req, res) => {
     try {
-        const characters = await getAllCharacters();
+        const {public} = req.query;
+        const characters = await getAllCharacters(public);
         return res.status(200).json({
             success: true,
             data: characters
