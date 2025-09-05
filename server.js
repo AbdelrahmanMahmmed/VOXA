@@ -1,7 +1,7 @@
 const app = require("./app");
 
 app.get("/", (req, res) => {
-  res.send("Hello, VOXA!");
+  res.send("Hello, Voxa!");
 });
 
 const PORT = process.env.PORT || 27017;
