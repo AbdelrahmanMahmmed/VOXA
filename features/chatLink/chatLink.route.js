@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { ProtectedRoters } = require('../../shared/middlewares/auth');
+const { ProtectedRoters } = require("../../shared/middlewares/auth");
 
 const { createLink, getLinkMessages } = require("./chatLink.controller");
 router.use(ProtectedRoters);

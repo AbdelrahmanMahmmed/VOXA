@@ -9,43 +9,99 @@
   "basePath": "/",
   "schemes": ["http"],
   "paths": {
-    "/api/v1/auth/register": { "post": { "description": "", "responses": { "201": { "description": "Created" } } } },
-    "/api/v1/auth/login":    { "post": { "description": "", "responses": { "200": { "description": "OK" } } } },
-    "/api/v1/auth/logout":   { "post": { "description": "", "responses": { "default": { "description": "" } } } },
-    "/api/v1/auth/forgot-password": {
+    "/api/v1/auth/register": {
       "post": {
-        "parameters": [{ "name": "body", "in": "body", "schema": { "type": "object", "properties": { "email": { "example": "any" } } } }],
+        "description": "",
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "",
         "responses": { "200": { "description": "OK" } }
       }
     },
-    "/api/v1/auth/verify-Code": { "post": { "description": "", "responses": { "200": { "description": "OK" } } } },
-    "/api/v1/auth/reset-password": {
+    "/api/v1/auth/logout": {
       "post": {
-        "parameters": [{
-          "name": "body",
-          "in": "body",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "email": { "example": "any" },
-              "newPassword": { "example": "any" }
+        "description": "",
+        "responses": { "default": { "description": "" } }
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": { "email": { "example": "any" } }
             }
           }
-        }],
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/auth/verify-Code": {
+      "post": {
+        "description": "",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "example": "any" },
+                "newPassword": { "example": "any" }
+              }
+            }
+          }
+        ],
         "responses": { "200": { "description": "OK" } }
       }
     },
 
     "/api/v1/user/me": {
-      "get":    { "parameters": [{ "name": "authorization", "in": "header", "type": "string" }], "responses": { "200": { "description": "OK" } } },
-      "put":    { "parameters": [{ "name": "authorization", "in": "header", "type": "string" }], "responses": { "200": { "description": "OK" } } },
-      "delete": { "parameters": [{ "name": "authorization", "in": "header", "type": "string" }], "responses": { "200": { "description": "OK" } } }
+      "get": {
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "put": {
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "delete": {
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
     },
     "/api/v1/user/characters": {
-      "get": { "parameters": [{ "name": "authorization", "in": "header", "type": "string" }], "responses": { "200": { "description": "OK" } } }
+      "get": {
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
     },
     "/api/v1/user/upload-avatar": {
-      "post": { "parameters": [{ "name": "authorization", "in": "header", "type": "string" }], "responses": { "200": { "description": "OK" } } }
+      "post": {
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
     },
     "/api/v1/user/": {
       "get": {
@@ -88,7 +144,10 @@
           {
             "name": "body",
             "in": "body",
-            "schema": { "type": "object", "properties": { "role": { "example": "any" } } }
+            "schema": {
+              "type": "object",
+              "properties": { "role": { "example": "any" } }
+            }
           }
         ],
         "responses": { "200": { "description": "OK" } }
@@ -97,12 +156,22 @@
 
     "/api/v1/character/": {
       "post": {
-        "parameters": [{ "name": "authorization", "in": "header", "type": "string" }],
-        "responses": { "201": { "description": "Created" }, "500": { "description": "Internal Server Error" } }
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": {
+          "201": { "description": "Created" },
+          "500": { "description": "Internal Server Error" }
+        }
       },
       "get": {
-        "parameters": [{ "name": "authorization", "in": "header", "type": "string" }],
-        "responses": { "200": { "description": "OK" }, "500": { "description": "Internal Server Error" } }
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     },
     "/api/v1/character/{id}": {
@@ -111,14 +180,21 @@
           { "name": "id", "in": "path", "required": true, "type": "string" },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
-        "responses": { "200": { "description": "OK" }, "404": { "description": "Not Found" }, "500": { "description": "Internal Server Error" } }
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Not Found" },
+          "500": { "description": "Internal Server Error" }
+        }
       },
       "delete": {
         "parameters": [
           { "name": "id", "in": "path", "required": true, "type": "string" },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
-        "responses": { "200": { "description": "OK" }, "500": { "description": "Internal Server Error" } }
+        "responses": {
+          "200": { "description": "OK" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     },
 
@@ -128,14 +204,20 @@
           { "name": "id", "in": "path", "required": true, "type": "string" },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
-        "responses": { "200": { "description": "OK" }, "404": { "description": "Not Found" } }
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Not Found" }
+        }
       },
       "delete": {
         "parameters": [
           { "name": "id", "in": "path", "required": true, "type": "string" },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
-        "responses": { "200": { "description": "OK" }, "500": { "description": "Internal Server Error" } }
+        "responses": {
+          "200": { "description": "OK" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     },
     "/api/v1/chat/create-link": {
@@ -154,30 +236,51 @@
             }
           }
         ],
-        "responses": { "201": { "description": "Created" }, "500": { "description": "Internal Server Error" } }
+        "responses": {
+          "201": { "description": "Created" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     },
     "/api/v1/chat/{linkId}": {
       "get": {
         "parameters": [
-          { "name": "linkId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "linkId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
-        "responses": { "200": { "description": "OK" }, "404": { "description": "Not Found" } }
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Not Found" }
+        }
       }
     },
 
     "/api/v1/message/{CharacterId}": {
       "get": {
         "parameters": [
-          { "name": "CharacterId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "CharacterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
         "responses": { "200": { "description": "OK" } }
       },
       "post": {
         "parameters": [
-          { "name": "CharacterId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "CharacterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" },
           {
             "name": "body",
@@ -212,32 +315,51 @@
         "responses": { "200": { "description": "OK" } }
       },
       "post": {
-        "parameters": [{ "name": "authorization", "in": "header", "type": "string" }],
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
         "responses": { "200": { "description": "OK" } }
       },
       "delete": {
-        "parameters": [{ "name": "authorization", "in": "header", "type": "string" }],
+        "parameters": [
+          { "name": "authorization", "in": "header", "type": "string" }
+        ],
         "responses": { "200": { "description": "OK" } }
       }
     },
     "/api/v1/feedback/{feedbackId}": {
       "get": {
         "parameters": [
-          { "name": "feedbackId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "feedbackId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
         "responses": { "200": { "description": "OK" } }
       },
       "put": {
         "parameters": [
-          { "name": "feedbackId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "feedbackId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
         "responses": { "200": { "description": "OK" } }
       },
       "delete": {
         "parameters": [
-          { "name": "feedbackId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "feedbackId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           { "name": "authorization", "in": "header", "type": "string" }
         ],
         "responses": { "200": { "description": "OK" } }

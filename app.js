@@ -1,27 +1,27 @@
-const express = require('express')
-const router = require('./interfaces/http/routes.js');
-const dotenv = require('dotenv');
+const express = require("express");
+const router = require("./interfaces/http/routes.js");
+const dotenv = require("dotenv");
 const cors = require("cors");
-const globalError = require('./shared/middlewares/globalError.js');
-const ApiError = require('./shared/utils/APIError.js');
+const globalError = require("./shared/middlewares/globalError.js");
+const ApiError = require("./shared/utils/APIError.js");
 
-dotenv.config({ path: 'config.env' })
-const app = express()
+dotenv.config({ path: "config.env" });
+const app = express();
 // app.use("/api/payment/stripe/webhook", express.raw({ type: 'application/json' }));
-app.use(express.json())
+app.use(express.json());
 app.use(cors());
-app.use(router)
+app.use(router);
 
-const DBConnection = require('./infrastructure/database/mongo.js');
+const DBConnection = require("./infrastructure/database/mongo.js");
 DBConnection();
 
-const morgan = require('morgan');
-app.use(morgan('dev'));
+const morgan = require("morgan");
+app.use(morgan("dev"));
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger-output.json');
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json");
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // app.all('*', (req, res, next) => {
 //     next(new ApiError(`No route found for: ${req.originalUrl}`, 404));
