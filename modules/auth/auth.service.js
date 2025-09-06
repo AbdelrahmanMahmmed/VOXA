@@ -78,7 +78,7 @@ exports.forgotPassword = async (email) => {
   return {
     message: "Reset code sent to your email",
     code: resetCode,
-    text: message,
+    html: message,
     user,
   };
 };

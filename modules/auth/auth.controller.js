@@ -79,7 +79,7 @@ exports.ForgotPassword = async (req, res, next) => {
     await SendEmail({
       to: result.user.email,
       subject: "Password Code From VOXA",
-      text: result.text,
+      html: result.html,
     });
 
     res.status(200).json({

@@ -13,7 +13,7 @@ const sendtoEmail = async (options) => {
     from: `"VOXA" <${process.env.AUTH_USER_SEND_EMAIL}>`,
     to: options.to,
     subject: options.subject,
-    text: options.text,
+    html: options.html,
   };
   await transporter.sendMail(mailOptions);
 };
