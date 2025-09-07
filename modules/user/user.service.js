@@ -145,3 +145,51 @@ exports.uploadUserProfileImage = async (req, file) => {
 
   return { message: "Image updated successfully" };
 };
+
+const crypto = require("crypto");
+const User = require("../../domains/user/user.model");
+const SendEmail = require("../../shared/utils/sendEmail");
+const { VerifyEmailMessage } = require("../../common/helpers/massage");
+async function sendVerificationEmail(email) {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found");
+  if (user.isActive) throw new Error("User already verified");
+
+  const token = crypto.randomBytes(32).toString("hex");
+  user.verificationToken = token;
+  user.verificationTokenExpires = Date.now() + 3600000;
+  await user.save();
+
+  const link = `http://localhost:27017/api/v1/user/verify/${token}`;
+
+  const message = await VerifyEmailMessage(user, link, "Voxa Team");
+
+  await SendEmail({
+    to: user.email,
+    subject: "Verify your email",
+    html: message,
+  });
+
+  return "Verification email sent";
+}
+
+async function verifyEmail(token) {
+  const user = await User.findOne({
+    verificationToken: token,
+    verificationTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) throw new Error("Invalid or expired token");
+
+  user.isActive = true;
+  user.verificationToken = undefined;
+  user.verificationTokenExpires = undefined;
+  await user.save();
+
+  return "Email verified successfully!";
+}
+
+module.exports = {
+  sendVerificationEmail,
+  verifyEmail,
+};

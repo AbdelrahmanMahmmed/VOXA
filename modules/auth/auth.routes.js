@@ -7,6 +7,9 @@ const {
   VerifiedCode,
   Resetpassword,
 } = require("./auth.controller");
+
+const { verifyDevice } = require("./auth.service");
+
 const {
   RegisterUserValidator,
   LoginUserValidator,
@@ -22,6 +25,7 @@ router.post("/logout", logout);
 router.post("/forgot-password", ForgotPassword);
 router.post("/verify-Code", VerifiedCode);
 router.post("/reset-password", resetpasswordVaild, Resetpassword);
+router.get("/verify-device", verifyDevice);
 
 // Export the router to be used in the main app
 module.exports = router;

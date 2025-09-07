@@ -8,6 +8,8 @@ const {
   GetAllCharacters,
   uploadImageProfile,
   UpdateName,
+  sendVerification,
+  verify,
 } = require("./user.controller");
 const { ProtectedRoters, allwedTo } = require("../../shared/middlewares/auth");
 const {
@@ -17,6 +19,8 @@ const {
 const { upload } = require("../../shared/utils/UploadImage");
 
 const router = express.Router();
+
+router.get("/verify/:token", verify);
 
 router.use(ProtectedRoters);
 
@@ -29,6 +33,8 @@ router
 router.get("/characters", GetAllCharacters);
 
 router.put("/update-avatar", upload.single("avatar"), uploadImageProfile);
+
+router.post("/send-verification", sendVerification);
 
 router.use(allwedTo("admin"));
 router.route("/").get(getAllUsers);

@@ -1,14 +1,27 @@
+const jwt = require("jsonwebtoken");
 const ApiError = require("../../shared/utils/APIError");
-
-const { saveUser } = require("../../domains/auth/auth.repo");
-const { hashPassword } = require("../../common/helpers/hash");
+const TrustedDevice = require("../../domains/TrustedDevice/TrustedDevice.model");
+const { saveUser, findUserBy } = require("../../domains/auth/auth.repo");
 const {
+  hashPassword,
+  comparePassword,
+  hashNumber,
+} = require("../../common/helpers/hash");
+const {
+  GenerateaCode,
   createId,
   generateLetterImage,
+  generateDeviceId,
 } = require("../../common/helpers/Generate");
-exports.createUser = async (data) => {
+const { generateToken } = require("../../common/helpers/jwt");
+const {
+  Message,
+  sendVerificationEmail,
+} = require("../../common/helpers/massage");
+
+exports.createUser = async (data, req) => {
   const HashPassword = await hashPassword(data.password);
-  const CreateId = await createId("USR", true, data.gender);
+  const CreateId = createId("USR", true, data.gender);
   const GenerateAavtar = await generateLetterImage(data.fName[0]);
 
   const user = {
@@ -19,6 +32,7 @@ exports.createUser = async (data) => {
     avatar: GenerateAavtar,
     password: HashPassword,
     gender: data.gender,
+    IdDeviceItsRegistered: generateDeviceId(req),
   };
 
   const userData = await saveUser(user);
@@ -35,18 +49,33 @@ exports.createUser = async (data) => {
   };
 };
 
-const { findUserBy } = require("../../domains/auth/auth.repo");
-const { comparePassword } = require("../../common/helpers/hash");
-const { generateToken } = require("../../common/helpers/jwt");
-exports.loginUser = async ({ email, password }) => {
+exports.loginUser = async (email, password, req) => {
   const user = await findUserBy("email", email);
-  if (!user) throw new ApiError("User Not Found", 404);
+  if (!user || user.IsDeleted)
+    throw new ApiError("User Not Found or Deleted", 404);
 
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) throw new ApiError("Invalid Password", 404);
 
-  const token = await generateToken({ userId: user._id });
+  const deviceId = generateDeviceId(req);
 
+  if (user.IdDeviceItsRegistered !== deviceId) {
+    const trusted = await TrustedDevice.findOne({ userId: user._id, deviceId });
+    if (!trusted) {
+      const verifyToken = jwt.sign(
+        { userId: user._id, deviceId },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "15m" },
+      );
+      await sendVerificationEmail(user.email, verifyToken, user);
+      throw new ApiError(
+        "New device detected. Check your email to verify.",
+        403,
+      );
+    }
+  }
+
+  const token = await generateToken({ userId: user._id });
   return {
     user: {
       userId: user.UserId,
@@ -57,9 +86,6 @@ exports.loginUser = async ({ email, password }) => {
   };
 };
 
-const { GenerateaCode } = require("../../common/helpers/Generate");
-const { hashNumber } = require("../../common/helpers/hash");
-const { Message } = require("../../common/helpers/massage");
 exports.forgotPassword = async (email) => {
   const user = await findUserBy("email", email);
   if (!user) throw new ApiError("User Not Found", 404);
@@ -118,4 +144,30 @@ exports.Resetpassword = async (email, Password) => {
     user,
     token,
   };
+};
+
+exports.verifyDevice = async (req, res) => {
+  try {
+    const { token } = req.query;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    const exists = await TrustedDevice.findOne({
+      userId: decoded.userId,
+      deviceId: decoded.deviceId,
+    });
+
+    if (exists)
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification link" });
+
+    await TrustedDevice.create({
+      userId: decoded.userId,
+      deviceId: decoded.deviceId,
+    });
+
+    res.json({ message: "Device verified. Please login again." });
+  } catch (err) {
+    res.status(400).json({ message: "Invalid or expired verification link" });
+  }
 };

@@ -9,7 +9,7 @@ const SendEmail = require("../../shared/utils/sendEmail");
 const ApiError = require("../../shared/utils/APIError");
 exports.registerUser = async (req, res, next) => {
   try {
-    const result = await createUser(req.body);
+    const result = await createUser(req.body, req);
 
     res.cookie("token", result.token, {
       httpOnly: true,
@@ -32,7 +32,7 @@ exports.registerUser = async (req, res, next) => {
 
 exports.loginUser = async (req, res, next) => {
   try {
-    const result = await loginUser(req.body);
+    const result = await loginUser(req.body.email, req.body.password, req);
 
     res.cookie("token", result.token, {
       httpOnly: true,

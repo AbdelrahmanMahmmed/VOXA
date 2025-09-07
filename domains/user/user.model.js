@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpires: {
+      type: Date,
+    },
     IsDeleted: {
       type: Boolean,
       default: false,
@@ -78,6 +84,10 @@ const userSchema = new mongoose.Schema(
     characterResetDate: {
       type: Date,
       default: new Date(),
+    },
+    IdDeviceItsRegistered: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true },

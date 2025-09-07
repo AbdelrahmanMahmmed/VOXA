@@ -1,9 +1,13 @@
+const axios = require("axios");
+const crypto = require("crypto");
+const { createCanvas } = require("canvas");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config({ path: "config.env" });
+
 exports.GenerateaCode = async () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const axios = require("axios");
-require("dotenv").config({ path: "config.env" });
 exports.GenerateMessageWithCharacterAI = async (model, prompt, messageUser) => {
   try {
     const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -39,12 +43,7 @@ exports.GenerateMessageWithCharacterAI = async (model, prompt, messageUser) => {
   }
 };
 
-const crypto = require("crypto");
-exports.createId = async (
-  type = "USR",
-  includeDash = false,
-  gender = "male",
-) => {
+function createId(type = "USR", includeDash = false, gender = "male") {
   const year = new Date().getFullYear();
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let random = "";
@@ -59,14 +58,9 @@ exports.createId = async (
   return includeDash
     ? `${type}-${year}-${random}-${g}`
     : `${type}${year}${random}${g}`;
-};
+}
 
-const { createCanvas } = require("canvas");
-const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
-const path = require("path");
-const cloudinaryConfig = require("../../infrastructure/coludinary");
-exports.generateLetterImage = async (letter) => {
+async function generateLetterImage(letter) {
   const canvas = createCanvas(200, 200);
   const ctx = canvas.getContext("2d");
 
@@ -94,4 +88,15 @@ exports.generateLetterImage = async (letter) => {
   });
 
   return result.secure_url;
-};
+}
+
+function generateDeviceId(req) {
+  const userAgent = req.headers["user-agent"] || "";
+  const ip = req.ip || req.connection.remoteAddress;
+  return crypto
+    .createHash("sha256")
+    .update(userAgent + ip)
+    .digest("hex");
+}
+
+module.exports = { generateDeviceId, createId, generateLetterImage };

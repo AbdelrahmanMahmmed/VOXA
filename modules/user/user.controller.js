@@ -110,3 +110,24 @@ exports.uploadImageProfile = async (req, res) => {
   const response = await uploadUserProfileImage(req, req.file);
   res.status(200).json(response);
 };
+
+const userService = require("./user.service");
+
+exports.sendVerification = async (req, res) => {
+  try {
+    const email = req.user.email;
+    const message = await userService.sendVerificationEmail(email);
+    res.json({ message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+exports.verify = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const message = await userService.verifyEmail(token);
+    res.json({ message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
