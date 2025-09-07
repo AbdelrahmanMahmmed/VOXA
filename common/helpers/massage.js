@@ -229,7 +229,7 @@ async function VerifyEmailMessage(user, verifyLink, appName = "Hotel Team") {
 }
 
 async function sendVerificationEmail(email, token, user) {
-  const link = `http://localhost:27017/api/v1/auth/verify-device?token=${token}`;
+  const link = `https://voxa-ruby.vercel.app/api/v1/auth/verify-device?token=${token}`;
 
   await sendtoEmail({
     to: email,
