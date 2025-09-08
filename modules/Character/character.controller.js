@@ -1,5 +1,5 @@
 const characterService = require("./character.service");
-const { CreateChat } = require("../../modules/chat/chat.controller");
+const chatController = require("../../modules/chat/chat.controller");
 
 class CharacterController {
   async Create(req, res) {
@@ -7,7 +7,7 @@ class CharacterController {
       const characterData = req.body;
       const newCharacter = await characterService.createCharacterInDB(characterData, req, res);
 
-      await CreateChat(newCharacter._id, req, res);
+      await chatController.CreateChat(newCharacter._id, req, res);
 
       return res.status(201).json({
         success: true,

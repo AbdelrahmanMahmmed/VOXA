@@ -1,6 +1,6 @@
 const { param } = require("express-validator");
 const validatorsMiddleware = require("../../shared/middlewares/validate");
-const { GetCharacterById } = require("../../domains/Character/character.repo");
+const chatRepo = require("../../domains/chat/chat.repo");
 
 exports.vaildationChatId = [
   param("id")
@@ -10,7 +10,7 @@ exports.vaildationChatId = [
     .withMessage("Invalid ChatId format")
     .bail()
     .custom(async (ChatId) => {
-      const chatId = await GetCharacterById(ChatId);
+      const chatId = await chatRepo.getChat(ChatId);
       if (!chatId) {
         throw new Error("Chat not found in database");
       }
