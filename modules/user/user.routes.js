@@ -1,51 +1,39 @@
 const express = require("express");
-const {
-  getUser,
-  UpdateUser,
-  deleteUser,
-  getAllUsers,
-  UpdateRoles,
-  GetAllCharacters,
-  uploadImageProfile,
-  UpdateName,
-  sendVerification,
-  verify,
-} = require("./user.controller");
+const userController = require("./user.controller");
 const { ProtectedRoters, allwedTo } = require("../../shared/middlewares/auth");
-const {
-  UpdatedUserValidator,
-  UpdatedUserForRoleValidator,
-} = require("./user.validators");
+const { UpdatedUserValidator, UpdatedUserForRoleValidator } = require("./user.validators");
 const { upload } = require("../../shared/utils/UploadImage");
 
 const router = express.Router();
 
-router.get("/verify/:token", verify);
+router.get("/verify/:token", userController.verify);
 
 router.use(ProtectedRoters);
 
 router
   .route("/me")
-  .get(getUser)
-  .put(UpdatedUserValidator, UpdateName)
-  .delete(deleteUser);
+  .get(userController.getUser)
+  .put(UpdatedUserValidator, userController.UpdateName)
+  .delete(userController.deleteUser);
 
-router.get("/characters", GetAllCharacters);
+router.get("/characters", userController.GetAllCharacters);
 
-router.put("/update-avatar", upload.single("avatar"), uploadImageProfile);
+router.put("/update-avatar", upload.single("avatar"), userController.uploadImageProfile);
 
-router.post("/send-verification", sendVerification);
+router.post("/send-verification", userController.sendVerification);
 
 router.use(allwedTo("admin"));
-router.route("/").get(getAllUsers);
+
+router
+  .route("/")
+  .get(userController.getAllUsers);
 
 router
   .route("/:id")
-  .get(getUser)
-  .put(UpdatedUserValidator, UpdateUser)
-  .delete(deleteUser);
+  .get(userController.getUser)
+  .delete(userController.deleteUser);
 
-router.route("/:id/role").put(UpdatedUserForRoleValidator, UpdateRoles);
+router.route("/:id/role").put(UpdatedUserForRoleValidator, userController.UpdateRoles);
 
 // Export the router to be used in the main app
 module.exports = router;

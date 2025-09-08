@@ -1,30 +1,35 @@
 const feedbackModel = require("./feedback.model");
-exports.CreateFeedback = async (DataFeedback) => {
-  return await feedbackModel.create(DataFeedback);
-};
 
-exports.getFeedBack = async (id) => {
-  return await feedbackModel
-    .findById(id)
-    .populate("user", "fName lName")
-    .select("user message type rating");
-};
+class feedbackRepo {
+  async CreateFeedback(DataFeedback) {
+    return await feedbackModel.create(DataFeedback);
+  };
 
-exports.getAllFeedBack = async (type) => {
-  return await feedbackModel
-    .find({ type: type, isResolved: false })
-    .populate("user", "fName lName")
-    .select("user message type rating");
-};
+  async getFeedBack(id) {
+    return await feedbackModel
+      .findById(id)
+      .populate("user", "fName lName")
+      .select("user message type rating");
+  };
 
-exports.deleteOne = async (id) => {
-  return await feedbackModel.findByIdAndDelete(id);
-};
+  async getAllFeedBack(type) {
+    return await feedbackModel
+      .find({ type: type, isResolved: false })
+      .populate("user", "fName lName")
+      .select("user message type rating");
+  };
 
-exports.DeleteAllFeedBack = async () => {
-  return await feedbackModel.deleteMany();
-};
+  async deleteOne(id) {
+    return await feedbackModel.findByIdAndDelete(id);
+  };
 
-exports.UpdatedResolved = async (data, id) => {
-  return await feedbackModel.findByIdAndUpdate(id, data);
-};
+  async deleteMany() {
+    return await feedbackModel.deleteMany({ isResolved: true });
+  }
+
+  async UpdatedResolved(data, id) {
+    return await feedbackModel.findByIdAndUpdate(id, data);
+  };
+
+}
+module.exports = new feedbackRepo();

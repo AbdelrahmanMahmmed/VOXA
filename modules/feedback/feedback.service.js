@@ -1,44 +1,43 @@
-const { deleteMany } = require("../../domains/feedback/feedback.model");
-const {
-  CreateFeedback,
-  getFeedBack,
-  getAllFeedBack,
-  deleteOne,
-  UpdatedResolved,
-} = require("../../domains/feedback/feedback.repo");
+const feedBackRepo = require("../../domains/feedback/feedback.repo");
 
-exports.CreateFeedBackInDb = async (req, data) => {
-  const UserId = req.user._id;
-  const FeedBack = await CreateFeedback({
-    ...data,
-    user: UserId,
-  });
-  return FeedBack;
-};
+class feedbackService {
 
-exports.getFeedbackInDb = async (id) => {
-  const feedback = await getFeedBack(id);
-  if (!feedback) throw new Error("the feedback not exist");
-  if (feedback.isResolved) throw new Error("The Problem is Solved");
-  return feedback;
-};
+  async CreateFeedBackInDb(req, data) {
+    const UserId = req.user._id;
+    const FeedBack = await feedBackRepo.CreateFeedback({
+      ...data,
+      user: UserId,
+    });
+    return FeedBack;
+  };
 
-exports.getAllFeedbackInDb = async (type) => {
-  const FeedBacks = await getAllFeedBack(type);
-  return FeedBacks;
-};
+  async getFeedbackInDb(id) {
+    const feedback = await feedBackRepo.getFeedBack(id);
+    if (!feedback) throw new Error("the feedback not exist");
+    if (feedback.isResolved) throw new Error("The Problem is Solved");
+    return feedback;
+  };
 
-exports.deleteOneInDb = async (id) => {
-  const feedback = await deleteOne(id);
-  return feedback;
-};
+  async getAllFeedbackInDb(type) {
+    const FeedBacks = await feedBackRepo.getAllFeedBack(type);
+    return FeedBacks;
+  };
 
-exports.deleteManyInDb = async () => {
-  const FeedBacks = await deleteMany();
-  return FeedBacks;
-};
+  async deleteOneInDb(id) {
+    const feedback = await feedBackRepo.deleteOne(id);
+    return feedback;
+  };
 
-exports.UpdateIsResolved = async (isResolved, id) => {
-  const feedback = await UpdatedResolved(isResolved, id);
-  return feedback;
-};
+  async deleteManyInDb() {
+    const FeedBacks = await feedBackRepo.deleteMany();
+    return FeedBacks;
+  };
+
+  async UpdateIsResolved(isResolved, id) {
+    const feedback = await feedBackRepo.UpdatedResolved(isResolved, id);
+    return feedback;
+  };
+
+}
+
+module.exports = new feedbackService();

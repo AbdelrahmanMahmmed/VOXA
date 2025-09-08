@@ -1,21 +1,17 @@
 const express = require("express");
-const { Create, GetOne, GetAll, Delete } = require("./character.controller");
+const CharacterController = require("./character.controller");
 const { ProtectedRoters } = require("../../shared/middlewares/auth");
-const {
-  CreateCharacterValidator,
-  vaildationCharacterId,
-} = require("./character.validators");
+const { CreateCharacterValidator, vaildationCharacterId } = require("./character.validators");
 
 const router = express.Router();
 
 router.use(ProtectedRoters);
-
-router.post("/", CreateCharacterValidator, Create);
-router.get("/", GetAll);
+router.post("/", CreateCharacterValidator, CharacterController.Create);
+router.get("/", CharacterController.GetAll);
 
 router
   .route("/:id")
-  .get(vaildationCharacterId, GetOne)
-  .delete(vaildationCharacterId, Delete);
+  .get(vaildationCharacterId, CharacterController.GetOne)
+  .delete(vaildationCharacterId, CharacterController.Delete);
 
 module.exports = router;

@@ -1,201 +1,190 @@
 const crypto = require("crypto");
 const { GetCharacterById } = require("../../domains/Character/character.repo");
-const {
-  getUser,
-  updateUser,
-  getAllUsers,
-} = require("../../domains/user/user.repo");
+const { getUser, updateUser, getAllUsers } = require("../../domains/user/user.repo");
 const { uploadImage } = require("../../shared/utils/UploadImage");
 const User = require("../../domains/user/user.model");
 const SendEmail = require("../../shared/utils/sendEmail");
 const { VerifyEmailMessage } = require("../../common/helpers/massage");
 
-async function getUserById(id) {
-  const User = await getUser(id);
-  if (!User || User.IsDeleted) {
-    throw new Error("User not found Or Deleted");
-  }
+class userService {
 
-  const charactersDetails = await Promise.all(
-    User.Characters.map(async (charId) => {
-      const char = await GetCharacterById(charId);
-      return {
-        name: char.name,
-        specialty: char.Specialist,
-      };
-    }),
-  );
-
-  return {
-    User: {
-      UserId: User.UserId,
-      name: `${User.fName} ${User.lName}`,
-      email: User.email,
-      characters: charactersDetails,
-      plan: User.plan,
-      Active: User.isActive,
-      avatar: User.avatar,
-    },
-  };
-}
-
-async function UpdateUserInDb(req, id) {
-  const User = await getUser(id);
-  if (!User || User.IsDeleted) {
-    throw new Error("User not found Or Deleted");
-  }
-
-  const updateData = await updateUser(id, {
-    role: req.body.role || User.role,
-  });
-
-  return {
-    User: {
-      UserId: updateData.UserId,
-      name: `${updateData.fName} ${updateData.lName}`,
-      role: updateData.role,
-    },
-  };
-}
-
-async function UpdateUserName(req, id) {
-  const User = await getUser(id);
-  if (!User || User.IsDeleted) {
-    throw new Error("User not found Or Deleted");
-  }
-
-  const updateData = await updateUser(id, {
-    fName: req.body.fName || User.fName,
-    lName: req.body.lName || User.lName,
-  });
-
-  return {
-    User: {
-      UserId: updateData.UserId,
-      name: `${updateData.fName} ${updateData.lName}`,
-      role: updateData.role,
-    },
-  };
-}
-
-async function deleteUserInDb(id) {
-  const User = await getUser(id);
-  if (!User || User.IsDeleted) {
-    throw new Error("User not found Or Deleted");
-  }
-  await updateUser(id, {
-    IsDeleted: true,
-  });
-  return {
-    message: "User deleted successfully",
-  };
-}
-
-async function getAllUsersInDb(page, limit) {
-  const Users = await getAllUsers(page, limit);
-  if (!Users || Users.users.length === 0) {
-    throw new Error("No users found");
-  }
-  return {
-    users: Users,
-  };
-}
-
-async function GetAllCharactersInDb(id, isPublished) {
-  const User = await getUser(id);
-  if (!User || User.IsDeleted) {
-    throw new Error("User not found Or Deleted");
-  }
-
-  const populatedUser = await User.populate("Characters");
-
-  let characters = populatedUser.Characters;
-
-  if (typeof isPublished !== "undefined") {
-    if (isPublished === "true" || isPublished === "false") {
-      const boolValue = isPublished === "true";
-      characters = characters.filter((char) => char.isPublished === boolValue);
-    } else {
-      throw new Error("Invalid value for isPublished, must be true or false");
+  async getUserById(id) {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+      throw new Error("User not found Or Deleted");
     }
+
+    const charactersDetails = await Promise.all(
+      User.Characters.map(async (charId) => {
+        const char = await GetCharacterById(charId);
+        return {
+          name: char.name,
+          specialty: char.Specialist,
+        };
+      }),
+    );
+
+    return {
+      User: {
+        UserId: User.UserId,
+        name: `${User.fName} ${User.lName}`,
+        email: User.email,
+        characters: charactersDetails,
+        plan: User.plan,
+        Active: User.isActive,
+        avatar: User.avatar,
+      },
+    };
   }
 
-  return {
-    count: characters.length,
-    data: characters.map((char) => ({
-      name: char.name,
-      avatar: char.avatar,
-      specialist: char.Specialist,
-      visibility: char.isPublished ? "public" : "private",
-    })),
-  };
-}
+  async UpdateUserInDb(req, id) {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+      throw new Error("User not found Or Deleted");
+    }
 
-async function uploadUserProfileImage(req, file) {
-  const user = await getUser(req.user._id);
-  if (!user) {
-    throw new Error("User not found");
+    const updateData = await updateUser(id, {
+      role: req.body.role || User.role,
+    });
+
+    return {
+      User: {
+        UserId: updateData.UserId,
+        name: `${updateData.fName} ${updateData.lName}`,
+        role: updateData.role,
+      },
+    };
   }
 
-  let imageUrl = "";
-  if (file) {
-    const result = await uploadImage(file);
-    imageUrl = result.secure_url;
+  async UpdateUserName(req, id) {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+      throw new Error("User not found Or Deleted");
+    }
+
+    const updateData = await updateUser(id, {
+      fName: req.body.fName || User.fName,
+      lName: req.body.lName || User.lName,
+    });
+
+    return {
+      User: {
+        UserId: updateData.UserId,
+        name: `${updateData.fName} ${updateData.lName}`,
+        role: updateData.role,
+      },
+    };
   }
 
-  user.avatar = imageUrl;
-  await user.save();
+  async deleteUserInDb(id) {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+      throw new Error("User not found Or Deleted");
+    }
+    await updateUser(id, {
+      IsDeleted: true,
+    });
+    return {
+      message: "User deleted successfully",
+    };
+  }
 
-  return { message: "Image updated successfully" };
+  async getAllUsersInDb(page, limit) {
+    const Users = await getAllUsers(page, limit);
+    if (!Users || Users.users.length === 0) {
+      throw new Error("No users found");
+    }
+    return {
+      users: Users,
+    };
+  }
+
+  async GetAllCharactersInDb(id, isPublished) {
+    const User = await getUser(id);
+    if (!User || User.IsDeleted) {
+      throw new Error("User not found Or Deleted");
+    }
+
+    const populatedUser = await User.populate("Characters");
+
+    let characters = populatedUser.Characters;
+
+    if (typeof isPublished !== "undefined") {
+      if (isPublished === "true" || isPublished === "false") {
+        const boolValue = isPublished === "true";
+        characters = characters.filter((char) => char.isPublished === boolValue);
+      } else {
+        throw new Error("Invalid value for isPublished, must be true or false");
+      }
+    }
+
+    return {
+      count: characters.length,
+      data: characters.map((char) => ({
+        name: char.name,
+        avatar: char.avatar,
+        specialist: char.Specialist,
+        visibility: char.isPublished ? "public" : "private",
+      })),
+    };
+  }
+
+  async uploadUserProfileImage(req, file) {
+    const user = await getUser(req.user._id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    let imageUrl = "";
+    if (file) {
+      const result = await uploadImage(file);
+      imageUrl = result.secure_url;
+    }
+
+    user.avatar = imageUrl;
+    await user.save();
+
+    return { message: "Image updated successfully" };
+  }
+
+  async sendVerificationEmail(email) {
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("User not found");
+    if (user.isActive) throw new Error("User already verified");
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = token;
+    user.verificationTokenExpires = Date.now() + 3600000;
+    await user.save();
+
+    const link = `https://voxa-ruby.vercel.app/api/v1/user/verify/${token}`;
+
+    const message = await VerifyEmailMessage(user, link, "Voxa Team");
+
+    await SendEmail({
+      to: user.email,
+      subject: "Verify your email",
+      html: message,
+    });
+
+    return "Verification email sent";
+  }
+
+  async verifyEmail(token) {
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) throw new Error("Invalid or expired token");
+
+    user.isActive = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    return "Email verified successfully!";
+  }
+
 }
-
-async function sendVerificationEmail(email) {
-  const user = await User.findOne({ email });
-  if (!user) throw new Error("User not found");
-  if (user.isActive) throw new Error("User already verified");
-
-  const token = crypto.randomBytes(32).toString("hex");
-  user.verificationToken = token;
-  user.verificationTokenExpires = Date.now() + 3600000;
-  await user.save();
-
-  const link = `http://localhost:27017/api/v1/user/verify/${token}`;
-
-  const message = await VerifyEmailMessage(user, link, "Voxa Team");
-
-  await SendEmail({
-    to: user.email,
-    subject: "Verify your email",
-    html: message,
-  });
-
-  return "Verification email sent";
-}
-
-async function verifyEmail(token) {
-  const user = await User.findOne({
-    verificationToken: token,
-    verificationTokenExpires: { $gt: Date.now() },
-  });
-
-  if (!user) throw new Error("Invalid or expired token");
-
-  user.isActive = true;
-  user.verificationToken = undefined;
-  user.verificationTokenExpires = undefined;
-  await user.save();
-
-  return "Email verified successfully!";
-}
-
-module.exports = {
-  sendVerificationEmail,
-  verifyEmail,
-  getUserById,
-  UpdateUserInDb,
-  UpdateUserName,
-  deleteUserInDb,
-  getAllUsersInDb,
-  GetAllCharactersInDb,
-  uploadUserProfileImage,
-};
+module.exports = new userService();
