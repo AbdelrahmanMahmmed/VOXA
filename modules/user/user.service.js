@@ -1,11 +1,16 @@
+const crypto = require("crypto");
 const { GetCharacterById } = require("../../domains/Character/character.repo");
 const {
   getUser,
   updateUser,
   getAllUsers,
 } = require("../../domains/user/user.repo");
+const { uploadImage } = require("../../shared/utils/UploadImage");
+const User = require("../../domains/user/user.model");
+const SendEmail = require("../../shared/utils/sendEmail");
+const { VerifyEmailMessage } = require("../../common/helpers/massage");
 
-exports.getUserById = async (id) => {
+async function getUserById(id) {
   const User = await getUser(id);
   if (!User || User.IsDeleted) {
     throw new Error("User not found Or Deleted");
@@ -32,9 +37,9 @@ exports.getUserById = async (id) => {
       avatar: User.avatar,
     },
   };
-};
+}
 
-exports.UpdateUserInDb = async (req, id) => {
+async function UpdateUserInDb(req, id) {
   const User = await getUser(id);
   if (!User || User.IsDeleted) {
     throw new Error("User not found Or Deleted");
@@ -51,9 +56,9 @@ exports.UpdateUserInDb = async (req, id) => {
       role: updateData.role,
     },
   };
-};
+}
 
-exports.UpdateUserName = async (req, id) => {
+async function UpdateUserName(req, id) {
   const User = await getUser(id);
   if (!User || User.IsDeleted) {
     throw new Error("User not found Or Deleted");
@@ -71,9 +76,9 @@ exports.UpdateUserName = async (req, id) => {
       role: updateData.role,
     },
   };
-};
+}
 
-exports.deleteUserInDb = async (id) => {
+async function deleteUserInDb(id) {
   const User = await getUser(id);
   if (!User || User.IsDeleted) {
     throw new Error("User not found Or Deleted");
@@ -84,9 +89,9 @@ exports.deleteUserInDb = async (id) => {
   return {
     message: "User deleted successfully",
   };
-};
+}
 
-exports.getAllUsersInDb = async (page, limit) => {
+async function getAllUsersInDb(page, limit) {
   const Users = await getAllUsers(page, limit);
   if (!Users || Users.users.length === 0) {
     throw new Error("No users found");
@@ -94,9 +99,9 @@ exports.getAllUsersInDb = async (page, limit) => {
   return {
     users: Users,
   };
-};
+}
 
-exports.GetAllCharactersInDb = async (id, isPublished) => {
+async function GetAllCharactersInDb(id, isPublished) {
   const User = await getUser(id);
   if (!User || User.IsDeleted) {
     throw new Error("User not found Or Deleted");
@@ -124,11 +129,9 @@ exports.GetAllCharactersInDb = async (id, isPublished) => {
       visibility: char.isPublished ? "public" : "private",
     })),
   };
-};
+}
 
-const { uploadImage } = require("../../shared/utils/UploadImage");
-
-exports.uploadUserProfileImage = async (req, file) => {
+async function uploadUserProfileImage(req, file) {
   const user = await getUser(req.user._id);
   if (!user) {
     throw new Error("User not found");
@@ -144,12 +147,8 @@ exports.uploadUserProfileImage = async (req, file) => {
   await user.save();
 
   return { message: "Image updated successfully" };
-};
+}
 
-const crypto = require("crypto");
-const User = require("../../domains/user/user.model");
-const SendEmail = require("../../shared/utils/sendEmail");
-const { VerifyEmailMessage } = require("../../common/helpers/massage");
 async function sendVerificationEmail(email) {
   const user = await User.findOne({ email });
   if (!user) throw new Error("User not found");
@@ -192,4 +191,11 @@ async function verifyEmail(token) {
 module.exports = {
   sendVerificationEmail,
   verifyEmail,
+  getUserById,
+  UpdateUserInDb,
+  UpdateUserName,
+  deleteUserInDb,
+  getAllUsersInDb,
+  GetAllCharactersInDb,
+  uploadUserProfileImage,
 };

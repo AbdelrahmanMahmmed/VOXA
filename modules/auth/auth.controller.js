@@ -119,10 +119,6 @@ exports.Resetpassword = async (req, res, next) => {
   try {
     const result = await Resetpassword(req.body.email, req.body.newPassword);
 
-    // if (!result.user) return next(new ApiError('There is no user with email ' + req.body.email, 404));
-    if (!result.user.passwordResetVerifed)
-      next(new ApiError("Invalid or expired reset password code", 400));
-
     res.cookie("token", result.token, {
       httpOnly: true,
       secure: true,

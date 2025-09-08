@@ -4,11 +4,11 @@ const { createCanvas } = require("canvas");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "config.env" });
 
-exports.GenerateaCode = async () => {
+async function GenerateaCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
-};
+}
 
-exports.GenerateMessageWithCharacterAI = async (model, prompt, messageUser) => {
+async function GenerateMessageWithCharacterAI(model, prompt, messageUser) {
   try {
     const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
@@ -41,7 +41,7 @@ exports.GenerateMessageWithCharacterAI = async (model, prompt, messageUser) => {
     console.error("AI ERROR:", err.response?.data || err.message);
     throw new Error("An error occurred while generating the response.");
   }
-};
+}
 
 function createId(type = "USR", includeDash = false, gender = "male") {
   const year = new Date().getFullYear();
@@ -99,4 +99,10 @@ function generateDeviceId(req) {
     .digest("hex");
 }
 
-module.exports = { generateDeviceId, createId, generateLetterImage };
+module.exports = {
+  GenerateaCode,
+  GenerateMessageWithCharacterAI,
+  generateDeviceId,
+  createId,
+  generateLetterImage,
+};
