@@ -2,7 +2,7 @@ const slug = require("slugify");
 const CharacterRepo = require("../../domains/Character/character.repo");
 const { createId } = require("../../common/helpers/Generate");
 const { generatePromot } = require("../../common/helpers/response");
-const { findUserBy } = require("../../domains/auth/auth.repo");
+const authRepo = require("../../domains/auth/auth.repo");
 const { AddLog } = require("../../log/log.controller");
 const { getSpecialistMessage, getLanguageEnforcementMessage } = require("../../common/helpers/massage");
 const Chat = require("../../domains/chat/chat.model");
@@ -11,11 +11,14 @@ const Message = require("../../domains/message/message.model");
 const { canCreateCharacter } = require("../../shared/middlewares/checklimitCharacter");
 
 class CharacterService {
-  async createCharacterInDB(characterData, req, res) {
-    if (!canCreateCharacter(req.user))
-      return res.status(403).json({ message: "Character limit reached for this month." });
+  async createCharacterInDB(characterData, user) {
+    if (!canCreateCharacter(user)) {
+      const error = new Error("Character limit reached for this month.");
+      error.statusCode = 403;
+      throw error;
+    }
 
-    const User = await findUserBy("_id", req.user._id);
+    const User = await authRepo.findUserBy("_id", user._id);
 
     const CharacterId = createId("CHARACTER", true, User.gender);
     const Slug = slug(characterData.name, { lower: true });
@@ -27,14 +30,14 @@ class CharacterService {
       characterData.personality,
     );
 
-    const specialist = getSpecialistMessage(characterData.Specialist,characterData.language);
+    const specialist = getSpecialistMessage(characterData.Specialist, characterData.language);
     const LanguageEnforcementMessage = getLanguageEnforcementMessage(characterData.language);
 
     const Character = await CharacterRepo.CreateCharacter({
       ...characterData,
       CharacterId,
       slug: Slug,
-      UserId: req.user._id,
+      UserId: user._id,
       promot:
         promot +
         "|Message Your Print:" +
@@ -43,17 +46,19 @@ class CharacterService {
         LanguageEnforcementMessage,
     });
 
-    req.user.createdCharactersThisMonth += 1;
-    await req.user.save();
+    user.createdCharactersThisMonth += 1;
+    await user.save();
 
     if (User && Character && Character._id) {
       User.Characters.push(Character._id);
       await User.save();
     }
-    await AddLog("createCharacter",req.user.UserId,"INFO",`Character created with Email: `,req.user.email,);
-    return Character;
-  };
 
+    await AddLog("createCharacter", user.UserId, "INFO", `Character created with Email: `, user.email);
+
+    return Character;
+  }
+  
   async getCharacterById(id) {
     const character = await CharacterRepo.GetCharacterById(id);
     return character;

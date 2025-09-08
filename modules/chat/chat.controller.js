@@ -1,17 +1,18 @@
 const chatService = require("./chat.service");
-const { GetCharacterById } = require("../../domains/Character/character.repo");
+const characterRepo = require("../../domains/Character/character.repo");
 
 class ChatController {
-  async CreateChat(CharacterId, req, res) {
-    const characterId = await GetCharacterById(CharacterId);
-    if (!characterId)
-      return res.status(404).json({ message: "Character not found" });
-    try {
-      const chat = await chatService.CreateChat(characterId.name, CharacterId, req.user._id);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  async CreateChat(CharacterId, userId) {
+    const character = await characterRepo.GetCharacterById(CharacterId);
+    if (!character) {
+      const error = new Error("Character not found");
+      error.statusCode = 404;
+      throw error;
     }
-  };
+
+    const chat = await chatService.CreateChat(character.name, CharacterId, userId);
+    return chat;
+  }
 
   async GetOne(req, res) {
     const ChatId = req.params.id;

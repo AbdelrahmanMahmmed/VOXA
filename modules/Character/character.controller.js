@@ -5,9 +5,9 @@ class CharacterController {
   async Create(req, res) {
     try {
       const characterData = req.body;
-      const newCharacter = await characterService.createCharacterInDB(characterData, req, res);
+      const newCharacter = await characterService.createCharacterInDB(characterData, req.user);
 
-      await chatController.CreateChat(newCharacter._id, req, res);
+      await chatController.CreateChat(newCharacter._id, req.user._id);
 
       return res.status(201).json({
         success: true,
@@ -15,12 +15,13 @@ class CharacterController {
         data: newCharacter,
       });
     } catch (error) {
-      return res.status(500).json({
+      const status = error.statusCode || 500;
+      return res.status(status).json({
         success: false,
         message: error.message || "Error creating character",
       });
     }
-  };
+  }
 
   async GetOne(req, res) {
     try {
@@ -61,7 +62,6 @@ class CharacterController {
       });
     }
   };
-
 
   async Delete(req, res) {
     const characterId = req.params.id;

@@ -1,10 +1,7 @@
 const express = require("express");
-const { Create, Delete, GetAll } = require("./message.controller");
+const MessageController = require("./message.controller");
 const { ProtectedRoters } = require("../../shared/middlewares/auth");
-const {
-  vaildationCharacterId,
-  vaildationMessageId,
-} = require("./message.validators");
+const { vaildationCharacterId, vaildationMessageId } = require("./message.validators");
 
 const router = express.Router();
 
@@ -12,9 +9,13 @@ router.use(ProtectedRoters);
 
 router
   .route("/:CharacterId")
-  .post(vaildationCharacterId, Create)
-  .get(vaildationCharacterId, GetAll);
+  .post(vaildationCharacterId, MessageController.Create)
+  .get(vaildationCharacterId, MessageController.GetAll);
 
-router.delete("/:id", vaildationMessageId, Delete);
+router.use(vaildationMessageId);
+router
+  .route("/:id")
+  .delete(MessageController.Delete)
+  .get(MessageController.GetOne);
 
 module.exports = router;

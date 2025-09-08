@@ -7,7 +7,7 @@ const chatRepo = require("../../domains/chat/chat.repo");
 
 class ChatService {
   async CreateChat(title, CharacterId, UserId) {
-    const user = await getUser(UserId);
+    const user = await userRepo.getUser(UserId);
 
     const isCharacterExists = user.Characters.includes(CharacterId);
     if (!isCharacterExists) {
@@ -30,7 +30,7 @@ class ChatService {
     } catch (error) {
       throw new Error("Error creating chat: " + error.message);
     }
-  };
+  }
 
   async GetChat(id) {
     try {
