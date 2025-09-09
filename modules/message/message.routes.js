@@ -7,15 +7,16 @@ const router = express.Router();
 
 router.use(ProtectedRoters);
 
-router
-  .route("/:CharacterId")
-  .post(vaildationCharacterId, MessageController.Create)
-  .get(vaildationCharacterId, MessageController.GetAll);
-
-router.use(vaildationMessageId);
+// Single Message by its ID
 router
   .route("/:id")
-  .delete(MessageController.Delete)
-  .get(MessageController.GetOne);
+  .get(vaildationMessageId, MessageController.GetOne)
+  .delete(vaildationMessageId, MessageController.Delete);
+
+// Messages related to a Character
+router
+  .route("/character/:CharacterId")
+  .post(vaildationCharacterId, MessageController.Create)
+  .get(vaildationCharacterId, MessageController.GetAll);
 
 module.exports = router;

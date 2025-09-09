@@ -2,7 +2,10 @@ const Message = require("./message.model");
 
 class MessageRepo {
   async getMessage(id) {
-    return await Message.findById(id);
+    return await Message.findById(id)
+      .populate("SenderId", "-_id fName lName")
+      .populate("ReceiverId", "name -_id")
+      .select("MessageId SenderId ReceiverId content Response");
   };
 
   async CreateMeassage(MessageData) {

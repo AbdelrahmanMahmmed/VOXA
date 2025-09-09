@@ -1,24 +1,11 @@
-const { param, body, query } = require("express-validator");
-const { getUser } = require("../../domains/user/user.repo");
+const { param, body } = require("express-validator");
 const validatorsMiddleware = require("../../shared/middlewares/validate");
 const { getFeedBack } = require("../../domains/feedback/feedback.repo");
 
 exports.CreateFeedBackValidator = [
-  param("user")
+  body("message")
     .notEmpty()
-    .withMessage("userId not exist")
-    .isMongoId()
-    .withMessage("Must Be MongoId")
-    .bail()
-    .custom(async (userId) => {
-      const user = await getUser(userId);
-      if (!user) {
-        throw new Error("User not found in database");
-      }
-      return true;
-    }),
-
-  body("message").notEmpty().withMessage("message is not exist"),
+    .withMessage("message is not exist"),
 
   body("rating")
     .notEmpty()

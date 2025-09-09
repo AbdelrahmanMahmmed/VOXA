@@ -5,8 +5,8 @@ class feedbackService {
   async CreateFeedBackInDb(req, data) {
     const UserId = req.user._id;
     const FeedBack = await feedBackRepo.CreateFeedback({
-      ...data,
       user: UserId,
+      ...data,
     });
     return FeedBack;
   };
@@ -25,6 +25,8 @@ class feedbackService {
 
   async deleteOneInDb(id) {
     const feedback = await feedBackRepo.deleteOne(id);
+    if (!feedback) throw new Error("the feedback not exist");
+    if (!feedback.isResolved) throw new Error("You can't delete this feedback because the problem is not solved");
     return feedback;
   };
 
