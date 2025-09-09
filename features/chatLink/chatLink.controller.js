@@ -1,31 +1,35 @@
-const { createChatLink, getMessagesBeforeLink } = require("./chatLink.service");
+const linkingService = require("./chatLink.service");
 const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
-exports.createLink = async (req, res) => {
-  try {
-    const { chatId, isPublic } = req.body;
-    const userId = req.user._id;
 
-    const link = await createChatLink(chatId, userId, isPublic);
+class linkingController {
+  async createLink(req, res) {
+    try {
+      const { chatId, isPublic } = req.body;
+      const userId = req.user._id;
 
-    res.status(201).json({
-      success: true,
-      message: "Link created",
-      link: `${process.env.FRONTEND_URL}/chat-link/${link.linkId}`,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+      const link = await linkingService.createChatLink(chatId, userId, isPublic);
 
-exports.getLinkMessages = async (req, res) => {
-  try {
-    const { linkId } = req.params;
+      res.status(201).json({
+        success: true,
+        message: "Link created",
+        link: `https://voxa-ruby.vercel.app/share/${link.linkId}`,
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
 
-    const { link, messages } = await getMessagesBeforeLink(linkId);
+  async getLinkMessages(req, res) {
+    try {
+      const { linkId } = req.params;
 
-    res.status(200).json({ success: true, link, messages });
-  } catch (error) {
-    res.status(404).json({ success: false, message: error.message });
-  }
-};
+      const { link, messages } = await linkingService.getMessagesBeforeLink(linkId);
+
+      res.status(200).json({ success: true, link, messages });
+    } catch (error) {
+      res.status(404).json({ success: false, message: error.message });
+    }
+  };
+}
+module.exports = new linkingController();
